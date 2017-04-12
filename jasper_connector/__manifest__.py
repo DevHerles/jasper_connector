@@ -26,7 +26,7 @@
 
 {
     'name': 'JasperReport Server Connector',
-    'version': '8.0.1.0.0',
+    'version': '10.0.1.0.0',
     'category': 'Reporting',
     'sequence': 20,
     'complexity': "expert",
@@ -73,7 +73,7 @@ In collaboration with Eric Vernichon (from Everlibre)
         'demo/jasper_document.xml',
     ],
     'external_dependencies': {'python': ['dime', 'httplib2', 'pyPdf']},
-    'installable': True,
+    'installable': False,
     'application': True,
     'auto_install': False,
 }
