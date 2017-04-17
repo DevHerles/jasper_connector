@@ -28,18 +28,14 @@ import os
 import time
 import base64
 import logging
-from openerp import pooler
+from odoo import api, _
 from openerp.report.render import render
-from openerp.tools.translate import _
 
-# from httplib2 import Http, ServerNotFoundError, HttpLib2Error
 from .parser import WriteContent, ParseResponse
 from .common import parameter_dict, merge_pdf
 from .report_exception import JasperException, EvalError
 from pyPdf import PdfFileWriter, PdfFileReader
-from openerp.addons.jasper_connector import jasperlib as jslib
-# from openerp.osv import orm
-from openerp import SUPERUSER_ID
+from odoo.addons.jasper_connector import jasperlib as jslib
 
 
 _logger = logging.getLogger('openerp.addons.jasper_connector.report')
@@ -96,20 +92,18 @@ class Report(object):
         self.data = data
         self.attrs = data.get('form', {})
         self.custom = data.get('jasper', {})
-        self.model = data.get('model', False)
-        self.pool = pooler.get_pool(cr.dbname)
+        self.model = data.get('model', context.get('active_model', False))
+        self.pool = api.Environment(cr, uid, context or {})
         self.outputFormat = 'PDF'
         self.path = None
-
         # Reuse object pool
-        self.model_obj = self.pool.get(self.model)
-        self.doc_obj = self.pool.get('jasper.document')
-        self.js_obj = self.pool.get('jasper.server')
+        self.model_obj = self.pool[self.model]
+        self.doc_obj = self.pool['jasper.document']
+        self.js_obj = self.pool['jasper.server']
         self.obj = None
 
         # If no context, retrieve one on the current user
-        self.context = context or self.pool.get('res.users').context_get(
-            cr, uid, uid)
+        self.context = context or self.pool['res.users'].context_get()
 
     def add_attachment(self, res_id, aname, content, mimetype='binary',
                        context=None):
@@ -121,13 +115,13 @@ class Report(object):
         ctx['type'] = mimetype
         ctx['default_type'] = 'binary'
 
-        return self.pool.get('ir.attachment').create(
-            self.cr, self.uid, {'name': name,
-                                'datas': base64.encodestring(content),
-                                'datas_fname': name,
-                                'file_type': mimetype,
-                                'res_model': self.model,
-                                'res_id': res_id}, context=ctx)
+        return self.pool['ir.attachment'].with_context(ctx).\
+            create({'name': name,
+                    'datas': base64.encodestring(content),
+                    'datas_fname': name,
+                    'file_type': mimetype,
+                    'res_model': self.model,
+                    'res_id': res_id})
 
     def _eval_field(self, cur_obj, fieldcontent):
         """
@@ -230,7 +224,7 @@ class Report(object):
         # Issue 934068 with web client with model is missing from the context
         if not self.model:
             self.model = current_document.model_id.model
-            self.model_obj = self.pool.get(self.model)
+            self.model_obj = self.pool[self.model]
 
         if context is None:
             context = self.context.copy()
@@ -238,7 +232,7 @@ class Report(object):
         if ids is None:
             ids = []
 
-        cur_obj = self.model_obj.browse(self.cr, self.uid, ex, context=context)
+        cur_obj = self.model_obj.with_context(context).browse(ex)
         aname = False
         if self.attrs['attachment']:
             aname = self._eval_attachment(cur_obj)
@@ -266,9 +260,7 @@ class Report(object):
                     raise JasperException(_('Check Print Error'), _('"check_print" function not found in "%s" object') % self.model)  # noqa
                 elif current_document.check_sel == 'func' and \
                         hasattr(self.model_obj, 'check_print') and \
-                        not self.model_obj.check_print(self.cr, self.uid,
-                                                       cur_obj,
-                                                       context=context):
+                        not cur_obj.check_print():
                     raise JasperException(_('Check Print Error'), _('Function "check_print" return an error'))  # noqa
 
             except SyntaxError, e:
@@ -290,15 +282,14 @@ class Report(object):
         reload_ok = False
         if self.attrs['reload'] and aname:
             _logger.info('Printing must be reload from attachment if exists (%s)' % aname)  # noqa
-            aids = self.pool.get('ir.attachment').search(
-                self.cr, self.uid, [('name', '=', aname),
-                                    ('res_model', '=', self.model),
-                                    ('res_id', '=', ex)])
+            aids = self.pool['ir.attachment'].\
+                search([('name', '=', aname),
+                        ('res_model', '=', self.model),
+                        ('res_id', '=', ex)])
             if aids:
                 reload_ok = True
                 _logger.info('Attachment found, reload it!')
-                brow_rec = self.pool.get('ir.attachment').browse(
-                    self.cr, self.uid, aids[0])
+                brow_rec = aids[0]
                 if brow_rec.datas:
                     d = base64.decodestring(brow_rec.datas)
                     WriteContent(d, pdf_list)
@@ -326,12 +317,9 @@ class Report(object):
 
             # Retrieve pattern from res.lang
             lang_obj = self.pool['res.lang']
-            lang_ids = lang_obj.search(self.cr, self.uid,
-                                       [('code', '=', language or 'en_US')],
-                                       context=context)
-            if lang_ids:
-                lg = lang_obj.browse(self.cr, self.uid, lang_ids[0],
-                                     context=context)
+            langs = lang_obj.search([('code', '=', language or 'en_US')])
+            if langs:
+                lg = langs[0]
                 d_par.update({
                     'pattern_date': lg.js_pattern_date or '',
                     'pattern_time': lg.js_pattern_time or '',
@@ -351,13 +339,10 @@ class Report(object):
             # Retrieve the company information and send them in parameter
             # Is document have company field, to print correctly the document
             # Or take it to the user
-            user = self.pool.get('res.users').browse(self.cr, self.uid,
-                                                     self.uid,
-                                                     context=context)
+            user = self.pool['res.users'].browse(self.uid)
             if hasattr(cur_obj, 'company_id') and cur_obj.company_id:
-                cny = self.pool.get('res.company').browse(
-                    self.cr, SUPERUSER_ID, cur_obj.company_id.id,
-                    context=context)
+                cny = self.pool['res.company'].sudo().\
+                    browse(cur_obj.company_id.id)
             else:
                 cny = user.company_id
 
@@ -397,9 +382,8 @@ class Report(object):
 
             # we must retrieve label in the language document
             # (not user's language)
-            for l in self.doc_obj.browse(self.cr, self.uid,
-                                         current_document.id,
-                                         context={'lang': language}).label_ids:
+            for l in self.doc_obj.with_context(lang=language).\
+                    browse(current_document.id).label_ids:
                 special_dict['I18N_' + l.name.upper()] = l.value or ''
 
             # If report is launched since a wizard,
@@ -421,7 +405,7 @@ class Report(object):
 
             try:
                 js = jslib.Jasper(js_conf['host'], js_conf['port'],
-                                  js_conf['user'], js_conf['pass'])
+                                  js_conf['user'], js_conf['passwd'])
                 js.auth()
                 envelop = js.run_report(uri=self.path or
                                         self.attrs['params'][1],
@@ -447,19 +431,16 @@ class Report(object):
                 self.cr.execute(js_conf['after'], {'id': ex})
 
             # Update the number of print on object
-            fld = self.model_obj.fields_get(self.cr, self.uid)
+            fld = self.model_obj.fields_get()
             if 'number_of_print' in fld:
-                self.model_obj.write(
-                    self.cr, self.uid, [cur_obj.id],
-                    {'number_of_print': (getattr(cur_obj, 'number_of_print',
-                                                 None) or 0) + 1},
-                    context=context)
+                cur_obj.write({'number_of_print':
+                               (getattr(cur_obj, 'number_of_print',
+                                        None) or 0) + 1})
 
         return (content, duplicate)
 
     def execute(self):
         """Launch the report and return it"""
-        context = self.context.copy()
 
         ids = self.ids
         log_debug('DATA:')
@@ -469,28 +450,24 @@ class Report(object):
         # For each IDS, launch a query, and return only one result
         #
         pdf_list = []
-        doc_ids = self.doc_obj.search(self.cr, self.uid,
-                                      [('id', '=', self.service)],
-                                      context=context)
+        doc_ids = self.doc_obj.search([('id', '=', self.service)])
         if not doc_ids:
             raise JasperException(_('Configuration Error'),
                                   _("Service name doesn't match!"))
 
-        doc = self.doc_obj.browse(self.cr, self.uid, doc_ids[0],
-                                  context=context)
+        doc = doc_ids[0]
         self.outputFormat = doc.format
         log_debug('Format: %s' % doc.format)
 
         if doc.server_id:
-            js_ids = [doc.server_id.id]
+            js_ids = [doc.server_id]
         else:
-            js_ids = self.js_obj.search(self.cr, self.uid,
-                                        [('enable', '=', True)])
+            js_ids = self.js_obj.search([('enable', '=', True)])
             if not len(js_ids):
                 raise JasperException(_('Configuration Error'),
                                       _('No JasperServer configuration found!'))  # noqa
 
-        js = self.js_obj.read(self.cr, self.uid, js_ids[0], context=context)
+        js = js_ids[0].read()[0]
 
         def compose_path(basename):
             return js['prefix'] and '/' + js['prefix'] + '/instances/%s/%s' or basename   # noqa
@@ -536,15 +513,14 @@ class Report(object):
                 return None
 
             filename = self._eval_field(current_obj, pdfname)
-            att_obj = self.pool.get('ir.attachment')
-            aids = att_obj.search(self.cr, self.uid,
-                                  [('name', '=', filename),
+            att_obj = self.pool['ir.attachment']
+            aids = att_obj.search([('name', '=', filename),
                                    ('res_model', '=', self.model_obj._name),
                                    ('res_id', '=', ex)])
             if not aids:
                 return None
 
-            att = att_obj.browse(self.cr, self.uid, aids[0], context=context)
+            att = aids[0]
             datas = StringIO()
             if att.datas:
                 datas.write(base64.decodestring(att.datas))
@@ -552,7 +528,7 @@ class Report(object):
             return None
 
         # If We must add begin and end file in the current PDF
-        cur_obj = self.model_obj.browse(self.cr, self.uid, ex, context=context)
+        cur_obj = self.model_obj.browse(ex)
         pdf_fo_begin = find_pdf_attachment(doc.pdf_begin, cur_obj)
         pdf_fo_ended = find_pdf_attachment(doc.pdf_ended, cur_obj)
 

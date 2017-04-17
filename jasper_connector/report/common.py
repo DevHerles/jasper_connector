@@ -26,7 +26,7 @@
 
 from lxml.etree import Element, tostring
 from pyPdf import PdfFileWriter, PdfFileReader
-from openerp.tools.misc import ustr
+from odoo.tools import ustr
 import logging
 
 _logger = logging.getLogger('openerp.addons.jasper_connector.report')

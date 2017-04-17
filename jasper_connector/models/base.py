@@ -22,11 +22,10 @@
 #
 ##############################################################################
 
-from openerp import models, fields
-import openerp
+from odoo import models, fields, report, api
 
-from openerp.addons.jasper_connector.report.jasper import report_jasper
-from openerp.addons.jasper_connector.common import registered_report
+from odoo.addons.jasper_connector.report.jasper import report_jasper
+from odoo.addons.jasper_connector.common import registered_report
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -74,25 +73,26 @@ class IrActionReport(models.Model):
         _logger.info('====[END REGISTER JASPER REPORT]====================')
         return True
 
-    def _lookup_report(self, cr, name):
+    @api.model_cr
+    def _lookup_report(self, name):
         """
         Use new report function to detect old report and
         use custom python parser
         """
-        if 'report.' + name in openerp.report.interface.report_int._reports:
-            rp = openerp.report.interface.report_int._reports['report.' + name]  # noqa
+        if 'report.' + name in report.interface.report_int._reports:
+            rp = report.interface.report_int._reports['report.' + name]  # noqa
             if not isinstance(rp, report_jasper):
                 rp = None
         else:
-            cr.execute("""SELECT * FROM ir_act_report_xml
-                           WHERE report_name=%s AND report_type=%s""",
-                       (name, 'jasper'))
-            r = cr.dictfetchone()
+            self._cr.execute("""SELECT * FROM ir_act_report_xml
+                             WHERE report_name=%s AND report_type=%s""",
+                             (name, 'jasper'))
+            r = self._cr.dictfetchone()
             rp = r and report_jasper('report.'+r['report_name']) or None
 
         if rp:
             return rp
 
-        return super(IrActionReport, self)._lookup_report(cr, name)
+        return super(IrActionReport, self)._lookup_report(name)
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

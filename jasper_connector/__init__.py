@@ -25,10 +25,6 @@
 ##############################################################################
 
 from . import models
-
-# import obj_server
-# import obj_document
-# import ir_actions
 from . import report
 from . import wizard
 

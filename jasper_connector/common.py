@@ -24,8 +24,8 @@
 ##############################################################################
 
 import logging
-import openerp
-from openerp.addons.jasper_connector.report.jasper import report_jasper
+from odoo import report
+from odoo.addons.jasper_connector.report.jasper import report_jasper
 
 _logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ KNOWN_PARAMETERS = [
 def registered_report(name):
     """ Register dynamicaly the report for each entry"""
     gname = 'report.' + name
-    if gname in openerp.report.interface.report_int._reports:
+    if gname in report.interface.report_int._reports:
         return
     report_jasper(gname)
     _logger.info('Register the jasper report service [%s]' % name)

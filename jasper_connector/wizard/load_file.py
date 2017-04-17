@@ -22,26 +22,24 @@
 #
 ##############################################################################
 
-# from openerp.osv import osv
-from openerp.osv import orm
-from openerp.osv import fields
+from odoo import models, fields, api
 import base64
 
 
-class LoadFile(orm.TransientModel):
+class LoadFile(models.TransientModel):
     _name = 'load.jrxml.file'
     _description = 'Load file in the jasperdocument'
 
-    _columns = {
-        'datafile': fields.binary('File', required=True,
-                                  help='Select file to transfert'),
-    }
+    datafile = fields.Binary('File', required=True,
+                             help='Select file to transfert')
 
-    def import_file(self, cr, uid, ids, context=None):
-        this = self.browse(cr, uid, ids[0], context=context)
-        content = base64.decodestring(this.datafile)
-        self.pool['jasper.document'].parse_jrxml(
-            cr, uid, context.get('active_ids'), content, context=context)
+    @api.multi
+    def import_file(self):
+        self.ensure_one()
+        content = base64.decodestring(self.datafile)
+        docs = self.env['jasper.document'].\
+            browse(self.env.context['active_ids'])
+        docs.parse_jrxml(content)
 
         return True
 

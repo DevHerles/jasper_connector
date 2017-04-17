@@ -24,11 +24,11 @@
 #
 ##############################################################################
 
-from openerp.report.interface import report_int
-from openerp.osv.osv import except_osv
+from odoo.report.interface import report_int
+from odoo import exceptions
 
-from openerp.addons.jasper_connector.report.report_soap import Report
-from openerp.addons.jasper_connector.report.report_exception import (
+from odoo.addons.jasper_connector.report.report_soap import Report
+from odoo.addons.jasper_connector.report.report_exception import (
     JasperException)
 
 import logging
@@ -50,7 +50,7 @@ class report_jasper(report_int):
         try:
             return Report(self.name, cr, uid, ids, data, context).execute()
         except JasperException, e:
-            raise except_osv(e.title, e.message)
+            raise exceptions.UserError(e.message)
 
 
 report_jasper('report.print.jasper.server')

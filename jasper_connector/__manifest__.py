@@ -63,7 +63,6 @@ In collaboration with Eric Vernichon (from Everlibre)
         'security/ir.model.access.csv',
         'views/base.xml',
         'data/jasper_document_extension.xml',
-        'wizard/wizard.xml',
         'wizard/load_file_view.xml',
         'views/server.xml',
         'views/document.xml',
@@ -72,8 +71,8 @@ In collaboration with Eric Vernichon (from Everlibre)
     'demo': [
         'demo/jasper_document.xml',
     ],
-    'external_dependencies': {'python': ['dime', 'httplib2', 'pyPdf']},
-    'installable': False,
+    'external_dependencies': {'python': ['httplib2', 'pyPdf']},
+    'installable': True,
     'application': True,
     'auto_install': False,
 }
