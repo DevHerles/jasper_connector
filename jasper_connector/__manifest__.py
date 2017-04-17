@@ -68,6 +68,9 @@ In collaboration with Eric Vernichon (from Everlibre)
         'views/document.xml',
         'views/base_view.xml',
     ],
+    "contributors": [
+        "Omar Castiñeira <omar@comunitea.com>",
+    ],
     'demo': [
         'demo/jasper_document.xml',
     ],

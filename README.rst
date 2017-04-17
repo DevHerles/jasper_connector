@@ -2,7 +2,7 @@
    :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
    :alt: License: AGPL-3
 
-.. image:: https://travis-ci.org/mga-team-odoo/jasperserver.svg?branch=8.0
+.. image:: https://travis-ci.org/mga-team-odoo/jasperserver.svg?branch=10.0
    :target: https://travis-ci.org/mga-team-odoo/jasperserver
 
 ============
@@ -17,7 +17,7 @@ Installation
 
 To install this module, you need to:
 
-#. git clone -b 8.0 https://github.com/mga-team-odoo/jasperserver.git
+#. git clone -b 10.0 https://github.com/mga-team-odoo/jasperserver.git
 #. Add it to the addons path
 
 Configuration
@@ -48,4 +48,5 @@ Contributors
 ------------
 
 * Christophe CHAUVET <christophe.chauvet(at)gmail.com>
+* Omar Castiñeira Saavedra <omar(at)comunitea.com>
 
