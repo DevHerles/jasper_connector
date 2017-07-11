@@ -191,7 +191,7 @@
                                 <field name="server_id"/>
                                 <field name="report_unit" attrs="{'required': [('mode','!=', 'multi')], 'readonly': [('mode','=', 'multi')]}"/>
                                 <newline/>
-                                <field name="jasper_file" colspan="4" attrs="{'required': [('mode','!=', 'multi')], 'readonly': [('mode','=', 'multi')]}"/>
+                                <field name="jasper_file" colspan="4" invisible="1"/>
                                 <field name="mode"/>
                                 <field name="report_id"/>
                                 <field name="ctx" colspan="4"/>

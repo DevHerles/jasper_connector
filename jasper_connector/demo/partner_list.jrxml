@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.2.2.final using JasperReports Library version 6.2.2  -->
-<!-- 2016-08-28T17:36:41 -->
+<!-- Created with Jaspersoft Studio version 6.4.0.final using JasperReports Library version 6.4.1  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="partner_list" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="08e18970-153f-48eb-9d02-de5773e63892">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<property name="ireport.jasperserver.url" value="http://localhost:8080/jasperserver/"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.reportUnit" value="/openerp/bases/Saroni/partner_list"/>
+	<property name="ireport.jasperserver.report.resource" value="/openerp/bases/Saroni/partner_list_files/main_jrxml"/>
 	<style name="Contact Type">
 		<conditionalStyle>
 			<conditionExpression><![CDATA[$F{Contact Type} == "invoice"]]></conditionExpression>
@@ -157,7 +160,7 @@
 				</graphicElement>
 			</rectangle>
 			<textField>
-				<reportElement x="109" y="2" width="197" height="20" uuid="c1025b66-d22d-4d41-9372-ad4d99127b3c"/>
+				<reportElement positionType="FixRelativeToBottom" x="109" y="2" width="197" height="20" uuid="c1025b66-d22d-4d41-9372-ad4d99127b3c"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 					<font isBold="true" isItalic="true"/>
 				</textElement>

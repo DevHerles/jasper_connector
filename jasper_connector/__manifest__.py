@@ -78,6 +78,7 @@ In collaboration with Eric Vernichon (from Everlibre)
     'installable': True,
     'application': True,
     'auto_install': False,
+    'pre_init_hook': 'create_function_get_field',
 }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

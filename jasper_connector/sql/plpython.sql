@@ -10,21 +10,19 @@ CREATE OR REPLACE FUNCTION get_field(
     model    text,
     obj_id   integer,
     field    text)
-RETURNS text AS 
+RETURNS text AS
 $BODY$
 
 if obj_id is None:
     return '0'
 else :
-    from oersted import OEClient
+    import odoorpc
 
     res = {}
     try:
-        oeclient = OEClient(server, port)
-        oeclient.login(database, login, password)
-        obj = oeclient.create_proxy(database, model)
-
-        res = obj.read(obj_id, [field])
+        odoo = odoorpc.ODOO(server, port=port)
+        odoo.login(database, login, password)
+        res = odoo.execute(model, 'read', obj_id, [field])
 
     except AssertionError, e:
         plpy.error('Authentification error')
