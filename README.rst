@@ -20,6 +20,8 @@ To install this module, you need to:
 #. git clone -b 10.0 https://github.com/mga-team-odoo/jasperserver.git
 #. Add it to the addons path
 
+Para que la función sql get_field funcione correctamente el paquete odoorpc tiene que estar instalado en el python de la máquina, no en el virtualenv.
+
 Configuration
 =============
 
@@ -49,4 +51,3 @@ Contributors
 
 * Christophe CHAUVET <christophe.chauvet(at)gmail.com>
 * Omar Castiñeira Saavedra <omar(at)comunitea.com>
-
