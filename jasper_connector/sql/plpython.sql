@@ -31,7 +31,7 @@ else :
         plpy.error(traceback.format_exc())
         raise
 
-    return res[field]
+    return res[0][field]
 
 $BODY$
 LANGUAGE plpythonu;
