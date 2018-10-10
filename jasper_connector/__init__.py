@@ -24,9 +24,10 @@
 #
 ##############################################################################
 
-from . import models
-from . import report
-from . import wizard
+from . import models  # noqa
+from . import report  # noqa
+from . import wizard  # noqa
+
 
 def create_function_get_field(cr):
     cr.execute('''

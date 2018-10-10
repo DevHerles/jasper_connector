@@ -36,7 +36,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-class report_jasper(report_int):
+class report_jasper(report_int):  # noqa
     """
     Extend report_int to use Jasper Server
     """
@@ -44,7 +44,6 @@ class report_jasper(report_int):
     def create(self, cr, uid, ids, data, context=None):
         if context is None:
             context = {}
-
         if _logger.isEnabledFor(logging.DEBUG):
             _logger.debug('Call %s' % self.name)
         try:

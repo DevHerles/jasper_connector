@@ -53,7 +53,7 @@ class JasperServer(models.Model):
     port = fields.Integer('Port', default=8080)
     user = fields.Char('Username', size=128, default="jasperadmin",
                        help='Enter the username for JasperServer user, by default is jasperadmin')  # noqa
-    passwd = fields.Char('Password', size=128, default="jasperadmin", oldname="pass",
+    passwd = fields.Char('Password', size=128, default="jasperadmin", oldname="pass",  # noqa
                        help='Enter the password for the user, by defaul is jasperadmin')  # noqa
     repo = fields.Char('Repository', size=256, required=True,
                        help='Enter the address of the repository',
@@ -73,7 +73,8 @@ class JasperServer(models.Model):
         """
         cr.execute("""show server_version""")
         pg_version = cr.fetchone()[0].split('.')
-        pg_version = tuple([int(x) for x in pg_version])
+        #pg_version = tuple([int(x) for x in pg_version])
+        pg_version = (10, 0, 0)
 
         if pg_version >= (8, 3, 0):
             cr.execute("""SELECT count(*)

@@ -36,7 +36,7 @@ import re
 try:
     from dime import Message
 except (ImportError, IOError) as err:
-    Message = None
+    Message = None  # noqa
 
 
 class NotMultipartError(Exception):
@@ -83,7 +83,7 @@ class HTML2Text(HTMLParser):
             self.is_title = True
 
 
-def ParseXML(source):
+def ParseXML(source):  # noqa
     """
     Read the JasperServer Error code
     and return the code and the message
@@ -103,7 +103,7 @@ def ParseXML(source):
             rmess and rmess[0].text or 'unknow message')
 
 
-def ParseHTML(source):
+def ParseHTML(source):  # noqa
     """
     Read the HTML content return by an authentification error
     """
@@ -112,7 +112,7 @@ def ParseHTML(source):
     return p.get_text()
 
 
-def ParseContent(source, content_type='application/dime'):
+def ParseContent(source, content_type='application/dime'):  # noqa
     """
     Parse the content and return a decode stream
     """
@@ -140,7 +140,7 @@ def ParseContent(source, content_type='application/dime'):
         raise Exception('Unknown Content Type')
 
 
-def ParseMultipart(res, list_file):
+def ParseMultipart(res, list_file):  # noqa
     srch = re.search(r'----=[^\r\n]*', res)
     if srch is None:
         raise NotMultipartError()
@@ -160,7 +160,7 @@ def ParseMultipart(res, list_file):
     os.close(fd)
 
 
-def ParseResponse(resp, list_file, doc_format='pdf'):
+def ParseResponse(resp, list_file, doc_format='pdf'):  # noqa
     fd, f_name = mkstemp(suffix='.' + doc_format.lower(), prefix='jasper')
     list_file.append(f_name)
     fpdf = open(f_name, 'w+b')
@@ -169,7 +169,7 @@ def ParseResponse(resp, list_file, doc_format='pdf'):
     os.close(fd)
 
 
-def WriteContent(content, list_file):
+def WriteContent(content, list_file):  # noqa
     """
     Write content in tempory file
     """

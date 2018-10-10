@@ -48,7 +48,7 @@ except ImportError:
     from StringIO import StringIO  # noqa
 
 
-class external_pdf(render):
+class external_pdf(render):  # noqa
     def __init__(self, pdf, doc_format='pdf'):
         render.__init__(self)
         self.content = pdf
@@ -260,7 +260,7 @@ class Report(object):
                     raise JasperException(_('Check Print Error'), _('"check_print" function not found in "%s" object') % self.model)  # noqa
                 elif current_document.check_sel == 'func' and \
                         hasattr(self.model_obj, 'check_print') and \
-                        not cur_obj.check_print():
+                        cur_obj.check_print():
                     raise JasperException(_('Check Print Error'), _('Function "check_print" return an error'))  # noqa
 
             except SyntaxError, e:

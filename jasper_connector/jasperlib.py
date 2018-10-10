@@ -79,7 +79,7 @@ class UnknownFormat(JasperException):
 class Request(etree.ElementBase):
     TAG = 'request'
 
-    def __init__(self, operationName='runReport', locale='en_US'):
+    def __init__(self, operationName='runReport', locale='en_US'):  # noqa
         super(Request, self).__init__(operationName=operationName,
                                       locale=locale)
 
@@ -87,7 +87,7 @@ class Request(etree.ElementBase):
 class RequestRD(etree.ElementBase):
     TAG = 'resourceDescriptor'
 
-    def __init__(self, wsType, name='', uriString=''):
+    def __init__(self, wsType, name='', uriString=''):  # noqa
         super(RequestRD, self).__init__(name=name, wsType=wsType,
                                         uriString=uriString)
 
@@ -110,7 +110,7 @@ class SoapEnv(object):
         'ns4': "http://www.jaspersoft.com/client",
     }
 
-    def __init__(self, wsType='list', action=''):
+    def __init__(self, wsType='list', action=''):  # noqa
         self.soap = etree.Element('{%s}Envelope' % self.NSMAP['SOAP-ENV'],
                                   nsmap=self.NSMAP)
         body = etree.SubElement(self.soap, '{%s}Body' %
@@ -173,7 +173,7 @@ class Jasper(object):
 
         return True
 
-    def send(self, soapQuery=''):
+    def send(self, soapQuery=''):  # noqa
         try:
             res, content = self.cnx.request(self.uri, 'POST', soapQuery,
                                             self.headers)
@@ -204,7 +204,7 @@ class Jasper(object):
                 tree.xpath('//returnMessage')[0].text)
             )
 
-    def create_request(self, operation='list', wsType='', uri='/', name='',
+    def create_request(self, operation='list', wsType='', uri='/', name='',  # noqa
                        arguments=None, params=None):
         if arguments is None:
             arguments = {}
@@ -250,7 +250,7 @@ class Jasper(object):
                                    uri=uri, arguments=args, params=params)
 
     @staticmethod
-    def parseMultipart(res):
+    def parseMultipart(res):  # noqa
         srch = re.search(r'----=[^\r\n]*', res)
         if srch is None:
             raise NotMultipartContent()

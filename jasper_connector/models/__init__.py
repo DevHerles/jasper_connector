@@ -22,8 +22,8 @@
 #
 ##############################################################################
 
-from . import base
-from . import document
-from . import server
+from . import base  # noqa
+from . import document  # noqa
+from . import server  # noqa
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
