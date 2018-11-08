@@ -73,7 +73,7 @@ class JasperServer(models.Model):
         """
         cr.execute("""show server_version""")
         pg_version = cr.fetchone()[0].split('.')
-        #pg_version = tuple([int(x) for x in pg_version])
+        # pg_version = tuple([int(x) for x in pg_version])
         pg_version = (10, 0, 0)
 
         if pg_version >= (8, 3, 0):

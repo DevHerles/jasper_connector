@@ -258,9 +258,7 @@ class Report(object):
                 elif current_document.check_sel == 'func' and \
                         not hasattr(self.model_obj, 'check_print'):
                     raise JasperException(_('Check Print Error'), _('"check_print" function not found in "%s" object') % self.model)  # noqa
-                elif current_document.check_sel == 'func' and \
-                        hasattr(self.model_obj, 'check_print') and \
-                        cur_obj.check_print():
+                elif current_document.check_sel == 'func' and hasattr(self.model_obj, 'check_print'):  # noqa
                     raise JasperException(_('Check Print Error'), _('Function "check_print" return an error'))  # noqa
 
             except SyntaxError, e:
